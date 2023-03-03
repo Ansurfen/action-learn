@@ -39,4 +39,4 @@ jobs:
           git config --global user.email "axf593161@gmail.com"
           git add .
           git commit -m 'init'
-          git push -u origin master
+          git push origin
