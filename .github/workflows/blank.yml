@@ -1,45 +1,78 @@
-# This is a basic workflow to help you get started with Actions
+name: Multi-Release
 
-name: CI
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
+    branches:
+      - main
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  build-and-release:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-
-      # Runs a single command using the runners shell
-      - name: "Set up Python"
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.10.5
-      - name: 'tidy python dependency'
-        run: pip install -r requirements.txt
+      - name: Checkout Repository
+        uses: actions/checkout@v2
         
-      - name: "Working"
-        run: python main.py
-
-      - name: Upload to this repo
-        run: |
-          git config --global user.name "ansurfen"
-          git config --global user.email "axf593161@gmail.com"
-          git add .
-          git commit -m 'init'
-          git push origin
+      # 打包第一个 zip 文件
+      - name: Archive Directory A
+        uses: montudor/action-zip@v1
+        with:
+          files: './hulo'
+          exclude_patterns: './todo'
+          output_name: 'build-a.zip'
+          
+      # 发布第一个 zip 文件
+      - name: Create Release A
+        id: create_release_a
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}-a
+          release_name: Release ${{ github.run_number }} A
+          body: Automated daily build and release of repository A.
+          draft: false
+          prerelease: false
+          
+      - name: Upload Release Asset A
+        id: upload-release-asset_a
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          asset_path: ./build-a.zip
+          asset_name: build-a.zip
+          asset_content_type: application/zip
+        if: steps.create_release_a.outputs.id != ''
+        
+      # 打包第二个 zip 文件
+      - name: Archive Directory B
+        uses: montudor/action-zip@v1
+        with:
+          files: './opencmd'
+          exclude_patterns: './todo'
+          output_name: 'build-b.zip'
+          
+      # 发布第二个 zip 文件
+      - name: Create Release B
+        id: create_release_b
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}-b
+          release_name: Release ${{ github.run_number }} B
+          body: Automated daily build and release of repository B.
+          draft: false
+          prerelease: false
+          
+      - name: Upload Release Asset B
+        id: upload-release-asset_b
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          asset_path: ./build-b.zip
+          asset_name: build-b.zip
+          asset_content_type: application/zip
+        if: steps.create_release_b.outputs.id != ''
