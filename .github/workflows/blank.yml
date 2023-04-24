@@ -66,17 +66,10 @@ jobs:
           output_name: 'build-b.zip'
           
       # 发布第二个 zip 文件
-      - name: Create Release B
-        id: create_release_b
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ github.run_number }}-b
-          release_name: Release ${{ github.run_number }} B
-          body: Automated daily build and release of repository B.
-          draft: false
-          prerelease: false
+      - name: Create Zip File
+        run: |
+          cd ./hulo
+          zip -r ../build-b.zip . -x ./todo/*
       
       - name: Get Upload URL
         id: get_upload_url_b
