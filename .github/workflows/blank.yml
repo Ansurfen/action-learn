@@ -18,32 +18,31 @@ jobs:
         run: |
           cd ./hulo
           zip -r ../build-a.zip . -x ./todo/*
+          
+      # 打包第二个 zip 文件
+      - name: Create Zip File
+        run: |
+          cd ./opencmd
+          zip -r ../build-b.zip . -x ./todo/*
 
       - name: List Files
-        run: ls -R
-
-      - name: Wait for Zip File
-        run: sleep 5
-
-      - name: List Files
-        run: ls -R        
-
-      # 发布第一个 zip 文件
-      - name: Create Release A
-        id: create_release_a
+        run: ls -R    
+      # 发布两个 zip 文件
+      - name: Create Release
+        id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ github.run_number }}-a
-          release_name: Release ${{ github.run_number }} A
-          body: Automated daily build and release of repository A.
+          tag_name: v${{ github.run_number }}
+          release_name: Release ${{ github.run_number }}
+          body: Automated daily build and release of repository.
           draft: false
           prerelease: false
       
-      - name: Get Upload URL
+      - name: Get Upload URL A
         id: get_upload_url_a
-        run: echo "::set-output name=upload_url::${{ steps.create_release_a.outputs.upload_url }}"
+        run: echo "::set-output name=upload_url::${{ steps.create_release.outputs.upload_url }}"
           
       - name: Upload Release Asset A
         id: upload-release-asset_a
@@ -55,25 +54,10 @@ jobs:
           asset_path: './build-a.zip'
           asset_name: build-a.zip
           asset_content_type: application/zip
-        if: steps.create_release_a.outputs.id != ''
-        
-      # 打包第二个 zip 文件
-      - name: Archive Directory B
-        uses: montudor/action-zip@v1
-        with:
-          files: './opencmd'
-          exclude_patterns: './todo'
-          output_name: 'build-b.zip'
-          
-      # 发布第二个 zip 文件
-      - name: Create Zip File
-        run: |
-          cd ./hulo
-          zip -r ../build-b.zip . -x ./todo/*
-      
-      - name: Get Upload URL
+
+      - name: Get Upload URL B
         id: get_upload_url_b
-        run: echo "::set-output name=upload_url::${{ steps.create_release_b.outputs.upload_url }}"          
+        run: echo "::set-output name=upload_url::${{ steps.create_release.outputs.upload_url }}"
 
       - name: Upload Release Asset B
         id: upload-release-asset_b
@@ -82,7 +66,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.get_upload_url_b.outputs.upload_url }}
-          asset_path: ./build-b.zip
+          asset_path: './build-b.zip'
           asset_name: build-b.zip
           asset_content_type: application/zip
-        if: steps.create_release_b.outputs.id != ''
