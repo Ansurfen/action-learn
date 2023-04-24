@@ -20,7 +20,11 @@ jobs:
           files: './hulo'
           exclude_patterns: './todo'
           output_name: 'build-a.zip'
-          
+          output_path: './dist'
+
+      - name: Wait for Zip File
+        run: sleep 5
+
       # 发布第一个 zip 文件
       - name: Create Release A
         id: create_release_a
@@ -45,7 +49,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.get_upload_url_a.outputs.upload_url }}
-          asset_path: ./build-a.zip
+          asset_path: './dist/build-a.zip'
           asset_name: build-a.zip
           asset_content_type: application/zip
         if: steps.create_release_a.outputs.id != ''
