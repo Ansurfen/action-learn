@@ -33,6 +33,10 @@ jobs:
           body: Automated daily build and release of repository A.
           draft: false
           prerelease: false
+      
+      - name: Get Upload URL
+        id: get_upload_url
+        run: echo "::set-output name=upload_url::${{ steps.create_release.outputs.upload_url }}"
           
       - name: Upload Release Asset A
         id: upload-release-asset_a
@@ -65,7 +69,11 @@ jobs:
           body: Automated daily build and release of repository B.
           draft: false
           prerelease: false
-          
+      
+      - name: Get Upload URL
+        id: get_upload_url
+        run: echo "::set-output name=upload_url::${{ steps.create_release.outputs.upload_url }}"          
+
       - name: Upload Release Asset B
         id: upload-release-asset_b
         uses: actions/upload-release-asset@v1
