@@ -16,7 +16,7 @@ jobs:
     steps:
       # 检查是否有更新
       - name: Check for updates
-        id: check-updates-${{ matrix.directory }}
+        id:  "check-updates-${{ matrix.directory }}"
         uses: actions/github-script@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
