@@ -1,4 +1,4 @@
-name: Multi-Release
+name: Daily Build and Release
 
 on:
   push:
@@ -6,66 +6,75 @@ on:
       - main
 
 jobs:
-  build-and-release:
+  build:
     runs-on: ubuntu-latest
-    
+
+    strategy:
+      matrix:
+        directory: ['opencmd', 'hulo'] # 需要检测更新的目录
+
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-        
-      # 打包第一个 zip 文件
+      # 检查是否有更新
+      - name: Check for updates
+        id: check-updates-${{ matrix.directory }}
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const directory = '${{ matrix.directory }}';
+            const { data } = await octokit.repos.compareCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              base: context.payload.repository.default_branch,
+              head: context.sha
+            });
+            let updated = false;
+            for (const commit of data.commits) {
+              if (commit.added.concat(commit.modified).concat(commit.removed).some(p => p.startsWith(directory))) {
+                updated = true;
+                break;
+              }
+            }
+            return { updated: updated };
+
+      # 如果有更新，则打包并发布
       - name: Create Zip File
+        if: steps.check-updates.outputs.updated == 'true'
         run: |
-          cd ./hulo
-          zip -r ../build-a.zip . -x ./todo/*
-          
-      # 打包第二个 zip 文件
-      - name: Create Zip File
-        run: |
-          cd ./opencmd
-          zip -r ../build-b.zip . -x ./todo/*
+          cd ./${{ matrix.directory }}
+          zip -r ../${{ matrix.directory }}.zip .
 
       - name: List Files
-        run: ls -R    
-      # 发布两个 zip 文件
+        if: steps.check-updates.outputs.updated == 'true'
+        run: ls -R 
+
+      # 发布
       - name: Create Release
-        id: create_release
+        if: steps.check-updates.outputs.updated == 'true'
+        id: create_release-${{ matrix.directory }}
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ github.run_number }}
-          release_name: Release ${{ github.run_number }}
-          body: Automated daily build and release of repository.
+          tag_name: v${{ github.run_number }}-${{ matrix.directory }}
+          release_name: Release ${{ github.run_number }}-${{ matrix.directory }}
+          body: Automated daily build and release of directory ${{ matrix.directory }}.
           draft: false
           prerelease: false
-      
-      - name: Get Upload URL A
-        id: get_upload_url_a
+
+      - name: Get Upload URL
+        if: steps.check-updates.outputs.updated == 'true'
+        id: get_upload_url-${{ matrix.directory }}
         run: echo "::set-output name=upload_url::${{ steps.create_release.outputs.upload_url }}"
           
-      - name: Upload Release Asset A
-        id: upload-release-asset_a
+      - name: Upload Release Asset
+        if: steps.check-updates.outputs.updated == 'true'
+        id: upload-release-asset-${{ matrix.directory }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.get_upload_url_a.outputs.upload_url }}
-          asset_path: './build-a.zip'
-          asset_name: build-a.zip
-          asset_content_type: application/zip
-
-      - name: Get Upload URL B
-        id: get_upload_url_b
-        run: echo "::set-output name=upload_url::${{ steps.create_release.outputs.upload_url }}"
-
-      - name: Upload Release Asset B
-        id: upload-release-asset_b
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.get_upload_url_b.outputs.upload_url }}
-          asset_path: './build-b.zip'
-          asset_name: build-b.zip
+          upload_url: ${{ steps.get_upload_url.outputs.upload_url }}
+          asset_path: ./${{ matrix.directory }}.zip
+          asset_name: ${{ matrix.directory }}.zip
           asset_content_type: application/zip
