@@ -8,7 +8,8 @@ plugin({
         })
         local _plugin = gdns:GetPlugin("yock/java")
         if _plugin.Path ~= "" then
-            load_plugin(pathf("@/plugin/") .. _plugin.Path.Path .. ".lua")
+            local uid = load_plugin(pathf("@/plugin/") .. _plugin.Path .. ".lua")
+            plugins[uid].install()
         end
     end
 })
