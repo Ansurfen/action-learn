@@ -8,8 +8,12 @@ plugin({
                     end),
                     case(Windows(), opt.suffix == "msi", function()
                         print("windows, msi")
+                    end, function()
+                        print("not found match")
                     end)
-                })
+                }, function()
+                    print(opt.ver .. "not found")
+                end)
             end)
         })
     end
