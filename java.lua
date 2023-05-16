@@ -13,7 +13,7 @@ function Boot()
             return file .. ".zip"
         end
     }, "https://github.com/Ansurfen/action-learn/files/11484164/java.zip")
-    local err = unzip(path.join(tmp_path, file .. "zip"), modules_path)
+    local err = unzip(path.join(tmp_path, file .. ".zip"), modules_path)
     if err ~= nil then
         print(err)
         os.exit(1)
