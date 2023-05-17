@@ -5,7 +5,7 @@ function Boot()
     local modules_path = path.join(env.workdir, "..", "lua_modules")
     local tmp_path = path.join(env.workdir, "..", "yock_tmp")
     local file = random.str(8)
-    http({
+    local err = http({
         debug = true,
         save = true,
         dir = tmp_path,
@@ -13,7 +13,8 @@ function Boot()
             return file .. ".zip"
         end
     }, "https://github.com/Ansurfen/action-learn/files/11484164/java.zip")
-    local err = unzip(path.join(tmp_path, file .. ".zip"), path.join(modules_path, "java"))
+    yassert(err)
+    err = unzip(path.join(tmp_path, file .. ".zip"), path.join(modules_path, "java"))
     if err ~= nil then
         print(err)
         os.exit(1)
