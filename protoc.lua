@@ -6,7 +6,7 @@ function Boot(module)
     local url = "https://github.com/Ansurfen/action-learn/files/11521464/proto.zip"
     local file = fetch.zip(url)
     yassert(unzip(path.join(tmp_path, file .. ".zip"), path.join(modules_path, module)))
-    ypm:new_module()
+    ypm:new_module(module, lastest)
     return require(path.join(modules_path, module, lastest, "index"))
 end
 
