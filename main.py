@@ -108,5 +108,4 @@ if len(candidates) > 0:
     with open('release.json', 'w+') as fp:
         json.dump(data, fp, indent=4)
         fp.close()
-        os.environ['COMMIT_MSG'] = "auto sync by python"
-os.environ['COMMIT_MSG'] = "auto sync by python"
+    subprocess.run(f'git config --global user.name "ansurfen"; git config --global user.email "{os.environ["GH_EMAIL"]}"; git add .; git commit -m "{os.environ["GH_SHA"]}"; git push origin')
