@@ -1,5 +1,6 @@
 import datetime
 import json
+import os
 import time
 import hashlib
 import subprocess
@@ -54,7 +55,7 @@ def is_new_day(timestamp):
 
 
 data = {}
-with open('./release.json', 'r') as fp:
+with open('release.json', 'r') as fp:
     data = json.load(fp)
     fp.close()
 
@@ -89,7 +90,6 @@ for name, v in data.items():
         if brfore_hash != after_hash:
             candidates.append(f'{name}.{cmp[1]}')
             # 添加到候选列表里就更新哈希，以第一个为准
-            print(name, idx, after_hash)
             if idx == 0:
                 data[name]["sha256"] = after_hash
                 # tag 用来给客户端记录，同步版本用的
@@ -104,6 +104,8 @@ release_ver += 1  # 当前day的下一个版本号
 data["_meta"]["version"] = release_ver
 data["_meta"]["timestamp"] = release_ts
 
-with open('./release.json', 'w+') as fp:
-    json.dump(data, fp, indent=4)
-    fp.close()
+if len(candidates) > 0:
+    with open('release.json', 'w+') as fp:
+        json.dump(data, fp, indent=4)
+        fp.close()
+    os.environ['COMMIT_MSG'] = "auto sync by python"
