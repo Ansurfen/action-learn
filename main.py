@@ -95,6 +95,7 @@ for name, v in data.items():
                 # tag 用来给客户端记录，同步版本用的
                 data[name]["tag"] = release_tag
         else:
+            subprocess.run(['rm', f'{name}.{cmp[1]}'], check=True)
             break
 
 
@@ -102,7 +103,6 @@ if len(candidates) > 0:
     subprocess.run(['gh', 'release', 'create', release_tag] +
                    candidates, check=True)
     for pack in candidates:
-        print("delete", pack)
         subprocess.run(['rm', pack], check=True)
     # 更新_meta
     release_ver += 1  # 当前day的下一个版本号
