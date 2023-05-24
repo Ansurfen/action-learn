@@ -1,4 +1,4 @@
-name: Build and Release
+name: Publish Release
 
 on:
   push:
@@ -6,44 +6,19 @@ on:
       - main
 
 jobs:
-  build_and_release:
+  publish:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        directory: ['hulo', 'opencmd']
-
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v2
-
-      # 检查是否有更新
-      - name: Check for updates
-        id: check-updates
-        run: |
-          if ! git diff HEAD^ HEAD --quiet ${{ matrix.directory }}; then
-            echo "Changes found in directory '${{ matrix.directory }}'"
-            echo "::set-output name=updated::true"
-          fi
-
-      # 创建压缩文件
-      - name: Create ZIP file
-        if: steps.check-updates.outputs.updated == 'true'
-        run: |
-          cd ${{ matrix.directory }}
-          zip -r ../${{ matrix.directory }}.zip .
-          echo "Created ${{ matrix.directory }}.zip"
-
-      # 发布新版本
-      - name: Publish release
-        if: always()
-        needs: [create-zip-hulo, create-zip-opencmd]
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Python
+        uses: actions/setup-python@v2
         with:
-          tag_name: latest
-          release_name: Release latest
-          draft: false
-          files: |
-            ${{ contains(matrix.directory, 'hulo') ? 'hulo.zip' : '' }}
-            ${{ contains(matrix.directory, 'opencmd') ? 'opencmd.zip' : '' }}
+          python-version: 3.x # 替换为您使用的 Python 版本
+      - name: Install dependencies
+        run: pip install -r requirements.txt # 如果需要的话，将 requirements.txt 替换为您的依赖文件名
+      - name: Publish Release
+        env:
+          INPUT_DIRECTORY: './yock' # 替换为您要打包的目录
+          INPUT_VERSION: '1.0.0' # 替换为您要发布的版本号
+        run: python main.py
