@@ -40,9 +40,9 @@ def sha256(filename):
 
 
 def is_new_day(timestamp):
-    date = datetime.datetime.fromtimestamp(timestamp).date().today()
+    date = datetime.datetime.fromtimestamp(timestamp).date()
     today = datetime.date.today()
-    return date != today
+    return date == today
 
 
 data = {}
@@ -54,7 +54,7 @@ release_ver = data["_meta"]["version"]
 release_ts = data["_meta"]["timestamp"]
 # 1) 当前还没运行过，赋值为当前时间
 # 2) 拿上一次运行的时间戳和当前时间比较，检测是否为新的一天
-if release_ts == 0 or is_new_day(release_ts):
+if release_ts == 0 or not is_new_day(release_ts):
     release_ver = 1  # 新的一天版本从1开始累加，运行的结尾release_ver会累加1代表当前day的下一个版本号
     release_ts = time.time()  # 更新时间为当前的时间
 # release的tag,  date部分，格式为 2023-1-1
