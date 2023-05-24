@@ -40,9 +40,9 @@ def sha256(filename):
 
 
 def is_new_day(timestamp):
-    date = datetime.datetime.fromtimestamp(timestamp).date()
+    date = datetime.datetime.fromtimestamp(timestamp).date().today()
     today = datetime.date.today()
-    return date == today
+    return date != today
 
 
 data = {}
