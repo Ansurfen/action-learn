@@ -68,7 +68,7 @@ if release_ts == 0 or is_new_day(release_ts):
 # release的tag,  date部分，格式为 2023-1-1
 # 他会和 ver 拼接成  2023-1-1-v1 这种形式作为最终tag
 release_tag = time.strftime(
-    '%Y-%m-%d', time.localtime(release_ts)) + f'v{release_ver}'
+    '%Y-%m-%d', time.localtime(release_ts)) + f'-v{release_ver}'
 
 # 压缩包处理列表
 compress = [[zip, "zip"], [tar, "tar.gz"]]
