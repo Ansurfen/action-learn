@@ -53,11 +53,6 @@ def is_new_day(timestamp):
     return date != today
 
 
-timestamp = time.time()
-local_time_str = time.strftime('%Y-%m-%d', time.localtime(timestamp))
-
-print(f"当前时间为：{local_time_str}")
-
 data = {}
 with open('release.json', 'r') as fp:
     data = json.load(fp)
@@ -101,7 +96,8 @@ for name, v in data.items():
         else:
             break
 
-subprocess.run(['gh', 'release', 'create'].extend(candidates), check=True)
+subprocess.run(['gh', 'release', 'create', release_tag].extend(
+    candidates), check=True)
 # 更新_meta
 release_ver += 1  # 当前day的下一个版本号
 data["_meta"]["version"] = release_ver
