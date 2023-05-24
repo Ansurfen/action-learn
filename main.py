@@ -109,3 +109,4 @@ if len(candidates) > 0:
         json.dump(data, fp, indent=4)
         fp.close()
         os.environ['COMMIT_MSG'] = "auto sync by python"
+os.environ['COMMIT_MSG'] = "auto sync by python"
