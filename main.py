@@ -116,5 +116,5 @@ if len(candidates) > 0:
     subprocess.run(['git', 'config', '--global',
                    'user.email', f'"{os.environ["GH_EMAIL"]}"'], check=True)
     subprocess.run(['git', 'add', '.'], check=True)
-    subprocess.run(['git', 'commit', '-m', f'"{os.environ["GH_SHA"]}"'])
+    subprocess.run(['git', 'commit', '-m', f'{os.environ["GH_SHA"]}'])
     subprocess.run(['git', 'push', 'origin'], check=True)
