@@ -102,6 +102,7 @@ if len(candidates) > 0:
     subprocess.run(['gh', 'release', 'create', release_tag] +
                    candidates, check=True)
     for pack in candidates:
+        print("delete", pack)
         subprocess.run(['rm', pack], check=True)
     # 更新_meta
     release_ver += 1  # 当前day的下一个版本号
