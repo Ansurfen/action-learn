@@ -93,7 +93,7 @@ for name, v in data.items():
     before = data[name]["timestamp"]
     after_hash = get_max_mtime("./"+name)
     if before != after_hash and before < after_hash:
-        data[name]["timestamp"] = after_hash  # 更新时间戳
+        data[name]["timestamp"] = after_hash  # 更新时间戳 
         for idx, cmp in enumerate(compress):
             cmp[0]("./" + name, f'{name}.{cmp[1]}')
             candidates.append(f'{name}.{cmp[1]}')
