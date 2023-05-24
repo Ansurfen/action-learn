@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+env:
+  COMMIT_MSG: ${{ github.sha }}
 
 jobs:
   publish:
@@ -28,5 +30,3 @@ jobs:
           git add .
           git commit -m '${{ env.COMMIT_MSG }}'
           git push origin
-        env:
-          COMMIT_MSG: ${{ github.sha }}
