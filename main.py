@@ -80,7 +80,7 @@ for name, v in data.items():
         continue
     brfore_hash = data[name]["sha256"]
     after_hash = ""
-    for idx, cmp in compress:
+    for idx, cmp in enumerate(compress):
         cmp[0]("./" + name, f'{name}.{cmp[1]}')
         if after_hash == "":
             after_hash = sha256(f'{name}.{cmp[1]}')
