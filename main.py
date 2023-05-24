@@ -78,7 +78,7 @@ candidates = []
 for name, v in data.items():
     if name == "_meta":
         continue
-    before_hash = data[name]["sha256"]
+    brfore_hash = data[name]["sha256"]
     after_hash = ""
     for idx, cmp in enumerate(compress):
         cmp[0]("./" + name, f'{name}.{cmp[1]}')
@@ -86,14 +86,13 @@ for name, v in data.items():
             after_hash = sha256(f'{name}.{cmp[1]}')
         # 通过哈希值比较确认压缩包是否要更新
         # 不同则加入候选列表，等待release
-        if before_hash != after_hash:
+        if brfore_hash != after_hash:
             candidates.append(f'{name}.{cmp[1]}')
             # 添加到候选列表里就更新哈希，以第一个为准
             if idx == 0:
-                print(name, idx, before_hash, after_hash)
                 data[name]["sha256"] = after_hash
-            # tag 用来给客户端记录，同步版本用的
-            data[name]["tag"] = release_tag
+                # tag 用来给客户端记录，同步版本用的
+                data[name]["tag"] = release_tag
         else:
             break
 
