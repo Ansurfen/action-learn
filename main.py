@@ -58,7 +58,7 @@ with open('./release.json', 'r') as fp:
     data = json.load(fp)
     fp.close()
 
-release_ver = f'v{data["_meta"]["version"]}'
+release_ver = data["_meta"]["version"]
 release_ts = data["_meta"]["timestamp"]
 # 1) 当前还没运行过，赋值为当前时间
 # 2) 拿上一次运行的时间戳和当前时间比较，检测是否为新的一天
@@ -106,4 +106,3 @@ data["_meta"]["timestamp"] = release_ts
 with open('./release.json', 'w+') as fp:
     json.dump(data, fp, indent=4)
     fp.close()
-
