@@ -1,14 +1,14 @@
 {
     "yock": {
-        "sha256": "fc0d6a54bcdd31b21e0b14bc000584f554c4f186d938da810032b14e0bcbaf7a",
-        "tag": "2023-05-24-v2"
+        "sha256": "e0a4eb67858edc4076cfdc57711fab80dd37dae05ad29227dfe006e0e2a64ccc",
+        "tag": "2023-05-24-v3"
     },
     "opencmd": {
-        "sha256": "c4ecef3604cd4ee7f862c3b3a7cae7e98e768dbfe89e62bbccb4bde9618bf569",
-        "tag": "2023-05-24-v2"
+        "sha256": "df08d70d3c2feb5ff73174a171f8650467ebc4600d4006227df115a695713280",
+        "tag": "2023-05-24-v3"
     },
     "_meta": {
-        "version": 3,
+        "version": 4,
         "timestamp": 1684925436.6652884
     }
 }
