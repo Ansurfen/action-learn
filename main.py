@@ -96,8 +96,8 @@ for name, v in data.items():
         else:
             break
 
-subprocess.run(['gh', 'release', 'create', release_tag].extend(
-    candidates), check=True)
+subprocess.run(['gh', 'release', 'create', release_tag] +
+               candidates, check=True)
 # 更新_meta
 release_ver += 1  # 当前day的下一个版本号
 data["_meta"]["version"] = release_ver
