@@ -63,7 +63,7 @@ release_ts = data["_meta"]["timestamp"]
 # 1) 当前还没运行过，赋值为当前时间
 # 2) 拿上一次运行的时间戳和当前时间比较，检测是否为新的一天
 if release_ts == 0 or is_new_day(release_ts):
-    release_ver = 0  # 新的一天版本从0开始累加，运行的结尾release_ver会累加1代表当前day的下一个版本号
+    release_ver = 1  # 新的一天版本从1开始累加，运行的结尾release_ver会累加1代表当前day的下一个版本号
     release_ts = time.time()  # 更新时间为当前的时间
 # release的tag,  date部分，格式为 2023-1-1
 # 他会和 ver 拼接成  2023-1-1-v1 这种形式作为最终tag
@@ -78,19 +78,19 @@ candidates = []
 for name, v in data.items():
     if name == "_meta":
         continue
-    src = "./" + name
     brfore_hash = data[name]["sha256"]
     after_hash = ""
-    for cmp in compress:
-        cmp[0](src, f'{name}.{cmp[1]}')
+    for idx, cmp in compress:
+        cmp[0]("./" + name, f'{name}.{cmp[1]}')
         if after_hash == "":
             after_hash = sha256(f'{name}.{cmp[1]}')
         # 通过哈希值比较确认压缩包是否要更新
         # 不同则加入候选列表，等待release
         if brfore_hash != after_hash:
             candidates.append(f'{name}.{cmp[1]}')
-            # 添加到候选列表里就更新哈希
-            data[name]["sha256"] = after_hash
+            # 添加到候选列表里就更新哈希，以第一个为准
+            if idx == 0:
+                data[name]["sha256"] = after_hash
             # tag 用来给客户端记录，同步版本用的
             data[name]["tag"] = release_tag
         else:
