@@ -103,6 +103,6 @@ release_ver += 1  # 当前day的下一个版本号
 data["_meta"]["version"] = release_ver
 data["_meta"]["timestamp"] = release_ts
 
-with open('./release.json', 'w') as fp:
+with open('./release.json', 'w+') as fp:
     json.dump(data, fp, indent=4)
     fp.close()
