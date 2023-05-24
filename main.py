@@ -89,6 +89,7 @@ for name, v in data.items():
         if brfore_hash != after_hash:
             candidates.append(f'{name}.{cmp[1]}')
             # 添加到候选列表里就更新哈希，以第一个为准
+            print(name, idx, after_hash)
             if idx == 0:
                 data[name]["sha256"] = after_hash
                 # tag 用来给客户端记录，同步版本用的
