@@ -19,7 +19,5 @@ jobs:
         run: pip install -r requirements.txt # 如果需要的话，将 requirements.txt 替换为您的依赖文件名
       - name: Publish Release
         env:
-          INPUT_DIRECTORY: './yock' # 替换为您要打包的目录
-          INPUT_VERSION: '1.0.0' # 替换为您要发布的版本号
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: python main.py

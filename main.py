@@ -1,11 +1,11 @@
-import os
-import subprocess
-import shutil
+import datetime
+import json
 import time
-timestamp = time.time()
+import hashlib
+import subprocess
 
 
-def zip_dir(source_dir: str, target_file: str):
+def zip(source_dir: str, target_file: str):
     """
     Compresses the contents of a directory using the zip command.
 
@@ -25,23 +25,88 @@ def zip_dir(source_dir: str, target_file: str):
     print(f"Successfully compressed directory {source_dir} into {target_file}")
 
 
-directory = os.environ.get('INPUT_DIRECTORY')
-if directory is None:
-    raise ValueError('Missing required input parameter: directory')
+def tar(source_dir: str, target_file: str):
+    cmd = ['tar', '-czf', target_file, source_dir]
+    try:
+        result = subprocess.run(cmd, check=True)
+    except subprocess.CalledProcessError as e:
+        raise Exception(
+            f"Failed to compress directory {source_dir}. Error: {e}")
 
-version = int(timestamp)
-if version is None:
-    raise ValueError('Missing required input parameter: version')
+    print(f"Successfully compressed directory {source_dir} into {target_file}")
 
-temp_dir = 'temp'
-os.makedirs(temp_dir)
 
-for item in os.listdir(directory):
-    item_path = os.path.join(directory, item)
-    if os.path.isfile(item_path):
-        shutil.copy2(item_path, temp_dir)
+def sha256(filename):
+    sha256_hash = hashlib.sha256()
+    with open(filename, 'rb') as f:
+        while True:
+            data = f.read(65536)
+            if not data:
+                break
+            sha256_hash.update(data)
+    return sha256_hash.hexdigest()
 
-subprocess.run(['tar', '-czf', f'{version}.tar.gz', temp_dir])
-zip_dir("./opencmd", f"{version}.zip")
-subprocess.run(['gh', 'release', 'create',
-               f'v{version}', f'{version}.tar.gz', f'{version}.zip'], check=True)
+
+def is_new_day(timestamp):
+    date = datetime.datetime.fromtimestamp(timestamp).date()
+    today = datetime.date.today()
+    return date != today
+
+
+timestamp = time.time()
+local_time_str = time.strftime('%Y-%m-%d', time.localtime(timestamp))
+
+print(f"当前时间为：{local_time_str}")
+
+data = {}
+with open('release.json', 'r') as fp:
+    data = json.load(fp)
+    fp.close()
+
+release_ver = f'v{data["_meta"]["version"]}'
+release_ts = data["_meta"]["timestamp"]
+# 1) 当前还没运行过，赋值为当前时间
+# 2) 拿上一次运行的时间戳和当前时间比较，检测是否为新的一天
+if release_ts == 0 or is_new_day(release_ts):
+    release_ver = 0  # 新的一天版本从0开始累加，运行的结尾release_ver会累加1代表当前day的下一个版本号
+    release_ts = time.time()  # 更新时间为当前的时间
+# release的tag,  date部分，格式为 2023-1-1
+# 他会和 ver 拼接成  2023-1-1-v1 这种形式作为最终tag
+release_tag = time.strftime(
+    '%Y-%m-%d', time.localtime(release_ts)) + f'v{release_ver}'
+
+# 压缩包处理列表
+compress = [[zip, "zip"], [tar, "tar.gz"]]
+
+# 要release的压缩包列表
+candidates = []
+for name, v in data.items():
+    if name == "_meta":
+        continue
+    src = "./" + name
+    brfore_hash = data[src]["sha256"]
+    after_hash = ""
+    for cmp in compress:
+        cmp[0](src, f'{name}.{cmp[1]}')
+        if after_hash == "":
+            after_hash = sha256(f'{name}.{cmp[1]}')
+        # 通过哈希值比较确认压缩包是否要更新
+        # 不同则加入候选列表，等待release
+        if brfore_hash != after_hash:
+            candidates.append(name)
+            # 添加到候选列表里就更新哈希
+            data[src]["sha256"] = after_hash
+            # tag 用来给客户端记录，同步版本用的
+            data[src]["tag"] = release_tag
+        else:
+            break
+
+subprocess.run(['gh', 'release', 'create'].extend(candidates), check=True)
+# 更新_meta
+release_ver += 1  # 当前day的下一个版本号
+data["_meta"]["version"] = release_ver
+data["_meta"]["timestamp"] = release_ts
+
+with open('release.json', 'w') as fp:
+    json.dump(data, fp, indent=4)
+    fp.close()
