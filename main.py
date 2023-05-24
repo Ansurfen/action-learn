@@ -3,18 +3,6 @@ import json
 import time
 import hashlib
 import subprocess
-import os
-
-
-def get_max_mtime(path):
-    max_mtime = 0
-    for dirpath, _, filenames in os.walk(path):
-        for filename in filenames:
-            file_path = os.path.join(dirpath, filename)
-            mtime = os.stat(file_path).st_mtime
-            if mtime > max_mtime:
-                max_mtime = mtime
-    return max_mtime
 
 
 def zip(source_dir: str, target_file: str):
@@ -25,7 +13,7 @@ def zip(source_dir: str, target_file: str):
     :param target_file: The name of the archive file to create.
     """
     # Create the zip command with the appropriate arguments
-    cmd = ['zip', '-r', target_file, source_dir]
+    cmd = ['zip', '-r', '-X', target_file, source_dir]
 
     # Call the command using subprocess.run()
     try:
@@ -90,13 +78,24 @@ candidates = []
 for name, v in data.items():
     if name == "_meta":
         continue
-    before = data[name]["timestamp"]
-    after_hash = get_max_mtime("./"+name)
-    if before != after_hash and before < after_hash:
-        data[name]["timestamp"] = after_hash  # 更新时间戳 
-        for idx, cmp in enumerate(compress):
-            cmp[0]("./" + name, f'{name}.{cmp[1]}')
+    brfore_hash = data[name]["sha256"]
+    after_hash = ""
+    for idx, cmp in enumerate(compress):
+        cmp[0]("./" + name, f'{name}.{cmp[1]}')
+        if after_hash == "":
+            after_hash = sha256(f'{name}.{cmp[1]}')
+        # 通过哈希值比较确认压缩包是否要更新
+        # 不同则加入候选列表，等待release
+        if brfore_hash != after_hash:
             candidates.append(f'{name}.{cmp[1]}')
+            # 添加到候选列表里就更新哈希，以第一个为准
+            print(name, idx, after_hash)
+            if idx == 0:
+                data[name]["sha256"] = after_hash
+                # tag 用来给客户端记录，同步版本用的
+                data[name]["tag"] = release_tag
+        else:
+            break
 
 subprocess.run(['gh', 'release', 'create', release_tag] +
                candidates, check=True)

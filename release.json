@@ -1,14 +1,14 @@
 {
     "yock": {
-        "timestamp": 1684928302.416407,
+        "sha256": "",
         "tag": ""
     },
     "opencmd": {
-        "timestamp": 1684928302.416407,
+        "sha256": "",
         "tag": ""
     },
     "_meta": {
-        "version": 3,
-        "timestamp": 1684928240.7891493
+        "version": 1,
+        "timestamp": 0
     }
 }
