@@ -88,7 +88,7 @@ for name, v in data.items():
         # 通过哈希值比较确认压缩包是否要更新
         # 不同则加入候选列表，等待release
         if brfore_hash != after_hash:
-            candidates.append(name)
+            candidates.append(f'{name}.{cmp[1]}')
             # 添加到候选列表里就更新哈希
             data[name]["sha256"] = after_hash
             # tag 用来给客户端记录，同步版本用的
