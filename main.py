@@ -104,6 +104,5 @@ data["_meta"]["version"] = release_ver
 data["_meta"]["timestamp"] = release_ts
 
 with open('./release.json', 'w+') as fp:
-    print(data)
-    json.dump(data, fp, indent=4)
+    json.dumps(data, fp, indent=4)
     fp.close()
