@@ -26,7 +26,7 @@ def zip(source_dir: str, target_file: str):
 
 
 def tar(source_dir: str, target_file: str):
-    cmd = ['tar', '-czf', target_file, source_dir]
+    cmd = ['tar', '-czf', target_file, "--mtime='2021-01-01'", source_dir]
     try:
         result = subprocess.run(cmd, check=True)
     except subprocess.CalledProcessError as e:
@@ -71,7 +71,7 @@ release_tag = time.strftime(
     '%Y-%m-%d', time.localtime(release_ts)) + f'-v{release_ver}'
 
 # 压缩包处理列表
-compress = [[zip, "zip"], [tar, "tar.gz"]]
+compress = [[tar, "tar.gz"], [zip, "zip"]]
 
 # 要release的压缩包列表
 candidates = []
