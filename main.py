@@ -101,6 +101,8 @@ for name, v in data.items():
 if len(candidates) > 0:
     subprocess.run(['gh', 'release', 'create', release_tag] +
                    candidates, check=True)
+    for pack in candidates:
+        subprocess.run(['rm', pack], check=True)
     # 更新_meta
     release_ver += 1  # 当前day的下一个版本号
     data["_meta"]["version"] = release_ver
