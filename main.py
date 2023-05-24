@@ -42,6 +42,6 @@ for item in os.listdir(directory):
         shutil.copy2(item_path, temp_dir)
 
 subprocess.run(['tar', '-czf', f'{version}.tar.gz', temp_dir])
-zip_dir("/opencmd", f"{version}.zip")
+zip_dir("./opencmd", f"{version}.zip")
 subprocess.run(['gh', 'release', 'create',
                f'v{version}', f'{version}.tar.gz', f'{version}.zip'], check=True)
