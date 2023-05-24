@@ -84,7 +84,7 @@ for name, v in data.items():
     if name == "_meta":
         continue
     src = "./" + name
-    brfore_hash = data[src]["sha256"]
+    brfore_hash = data[name]["sha256"]
     after_hash = ""
     for cmp in compress:
         cmp[0](src, f'{name}.{cmp[1]}')
@@ -95,9 +95,9 @@ for name, v in data.items():
         if brfore_hash != after_hash:
             candidates.append(name)
             # 添加到候选列表里就更新哈希
-            data[src]["sha256"] = after_hash
+            data[name]["sha256"] = after_hash
             # tag 用来给客户端记录，同步版本用的
-            data[src]["tag"] = release_tag
+            data[name]["tag"] = release_tag
         else:
             break
 
