@@ -21,3 +21,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: python main.py
+      - name: Upload to this repo
+        run: |
+          git config --global user.name "ansurfen"
+          git config --global user.email "axf593161@gmail.com"
+          git add .
+          git commit -m 'auto sync'
+          git push origin
