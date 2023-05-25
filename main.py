@@ -54,8 +54,6 @@ release_ver = data["_meta"]["version"]
 release_ts = data["_meta"]["timestamp"]
 # 1) 当前还没运行过，赋值为当前时间
 # 2) 拿上一次运行的时间戳和当前时间比较，检测是否为新的一天
-print(is_new_day(release_ts), datetime.date.today(),
-      datetime.datetime.fromtimestamp(release_ts).date())
 if release_ts == 0 or not is_new_day(release_ts):
     release_ver = 1  # 新的一天版本从1开始累加，运行的结尾release_ver会累加1代表当前day的下一个版本号
     release_ts = time.time()  # 更新时间为当前的时间
