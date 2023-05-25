@@ -4,11 +4,11 @@
         "tag": "2023-05-24-v6"
     },
     "opencmd": {
-        "sha256": "862e293f38d506ee37c1ee476a4ee845b91230d1374019b80a82b64d584c5732",
-        "tag": "2023-05-24-v7"
+        "sha256": "c5e01e0c9edb2f3f8929ca8f65c8dcd529768a4e13157079b8f1cabcf108fdee",
+        "tag": "2023-05-25-v1"
     },
     "_meta": {
-        "version": 8,
-        "timestamp": 1684938441.9247718
+        "version": 2,
+        "timestamp": 1684984618.1169183
     }
 }
