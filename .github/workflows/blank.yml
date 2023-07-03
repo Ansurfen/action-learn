@@ -13,18 +13,18 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.x
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-      - name: Publish Release
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          GH_EMAIL: ${{ secrets.EMAIL }}
-          GH_SHA: ${{ github.sha }}
-        run: python main.py
+#       - name: Set up Python
+#         uses: actions/setup-python@v2
+#         with:
+#           python-version: 3.x
+#       - name: Install dependencies
+#         run: pip install -r requirements.txt
+#       - name: Publish Release
+#         env:
+#           GH_TOKEN: ${{ secrets.GH_TOKEN }}
+#           GH_EMAIL: ${{ secrets.EMAIL }}
+#           GH_SHA: ${{ github.sha }}
+#         run: python main.py
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         env:
